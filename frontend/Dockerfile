@@ -1,14 +1,29 @@
-FROM node:16-alpine
+# Stage 1: Build frontend
+FROM node:18-alpine AS frontend
 
-WORKDIR /frontend
+WORKDIR /app
 
-COPY package*.json ./
+# Устанавливаем bash и необходимые инструменты
+RUN apk add --no-cache bash
+
+# Копируем package файлы и ставим зависимости
+COPY package.json package-lock.json ./
 RUN npm install
 
+# Копируем весь проект
 COPY . .
 
+# Делаем скрипты исполняемыми
+RUN chmod -R +x node_modules/.bin
+
+# Сборка приложения
 RUN npm run build
 
-EXPOSE 3000
+# Stage 2: Serve with nginx
+FROM nginx:alpine
 
-CMD ["npm", "start"]
+# Копируем сборку
+COPY --from=frontend /app/build /usr/share/nginx/html
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

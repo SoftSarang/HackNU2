@@ -15,6 +15,7 @@ from app.core.security import (
     create_refresh_token,
 )
 from app.core.config import settings  
+from app.api.deps import get_current_user
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
@@ -77,3 +78,7 @@ async def logout(user_id: str):
     redis = await get_redis()
     await redis.delete(f"refresh_token:{user_id}")
     return {"message": "Successfully logged out"}
+
+@router.get("/me", response_model=UserRead)
+async def get_current_user(user: User = Depends(get_current_user)):
+    return user

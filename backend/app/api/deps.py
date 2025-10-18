@@ -1,38 +1,36 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from sqlalchemy import select 
 from sqlalchemy.ext.asyncio import AsyncSession
-from jose import JWTError
-
+from sqlalchemy import select
 from app.db.database import get_async_session
 from app.models.user import User
 from app.core.security import decode_access_token
-from app.core.config import settings
-from app.schemas.token import Token
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
-async def get_current_user(
-    token: str = Depends(oauth2_scheme),
-    db: AsyncSession = Depends(get_async_session),
-   ) -> User:
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_async_session)):
+    user_id = decode_access_token(token)
+    if user_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     try:
-        payload = decode_access_token(token)
-        if isinstance(payload, JWTError):
-            raise credentials_exception
-        user_id: str = payload.get("sub")
-        if user_id is None:
-            raise credentials_exception
-        token_data = Token(access_token=token)
-    except JWTError:
-        raise credentials_exception
-    result = await db.execute(select(User).where(User.id == int(user_id)))
+        user_id = int(user_id)  # Преобразуем user_id в int
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token format",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    query = select(User).where(User.id == user_id)
+    result = await db.execute(query)
     user = result.scalars().first()
     if user is None:
-        raise credentials_exception
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     return user
