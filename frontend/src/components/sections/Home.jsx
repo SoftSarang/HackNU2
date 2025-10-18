@@ -26,7 +26,7 @@ const CanvasWrapper = styled.div`
 
 const BannerTitle = styled(motion.h1)`
   position: absolute;
-  bottom: 200px;
+  bottom: 400px;
   left: -20px;
   font-size: 26.25rem;
   pointer-events: none;

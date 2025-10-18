@@ -3,11 +3,12 @@ import { useRef, useState, useEffect } from "react";
 import { LocomotiveScrollProvider } from "react-locomotive-scroll";
 import "locomotive-scroll/dist/locomotive-scroll.css";
 import { AnimatePresence } from "framer-motion";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";
 
 import GlobalStyles from "./styles/GlobalStyles";
 import { dark } from "./styles/Themes";
 import Home from "./components/sections/Home";
+import Teams from "./components/sections/teams/TeamPage";
 import About from "./components/sections/About";
 import Second from "./components/sections/Second";
 import ScrollTriggerProxy from "./components/ScrollTriggerProxy";
@@ -23,6 +24,7 @@ import SignUp from "./components/SignUp";
 import Logo from "./components/Logo";
 import Cursor from "./components/Cursor/Cursor";
 import { CursorContextProvider } from "./context/cursor";
+import TeamPage from "./components/sections/teams/TeamPage";
 
 function ScrollRoutes() {
   const containerRef = useRef(null);
@@ -63,6 +65,7 @@ function ScrollRoutes() {
             />
             <Route path="/sign-in" element={<SignIn />} />
             <Route path="/sign-up" element={<SignUp />} />
+            <Route path="/teams" element={<TeamPage />} />
           </Routes>
         </AnimatePresence>
       </main>
