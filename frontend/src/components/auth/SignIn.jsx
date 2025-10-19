@@ -7,6 +7,7 @@ import {
   Typography,
   Box,
   Link,
+  Snackbar,
   Alert,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -20,8 +21,21 @@ const SignIn = () => {
     email: '',
     password: '',
   });
-  const [error, setError] = useState(null);
+  const [emailError, setEmailError] = useState(false); // State for email error
+  const [emailErrorMessage, setEmailErrorMessage] = useState(''); // State for error message
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success',
+  });
 
+  // Email validation regex
+  const validateEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+
+  // Handle changes in form fields
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -29,23 +43,52 @@ const SignIn = () => {
     });
   };
 
+  // Handle form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
+
+    // Validate email
+    if (!validateEmail(formData.email)) {
+      setEmailError(true);
+      setEmailErrorMessage('Invalid email address');
+      return; // Stop form submission if email is invalid
+    }
+
+    // Reset email error state if email is valid
+    setEmailError(false);
+    setEmailErrorMessage('');
+
     try {
       const response = await api.post('/auth/login', {
         email: formData.email,
         password: formData.password,
       });
       const { access_token, refresh_token } = response.data;
+
+      // Store tokens in local storage
       localStorage.setItem('access_token', access_token);
       localStorage.setItem('refresh_token', refresh_token);
       await login({ access_token, refresh_token });
+
+      // If successful, show success message and redirect
+      setSnackbar({
+        open: true,
+        message: 'Signed in successfully!',
+        severity: 'success',
+      });
       navigate('/profile');
     } catch (err) {
-      setError(err.response?.data?.detail || 'Ошибка входа');
+      setSnackbar({
+        open: true,
+        message: err.response?.data?.detail || 'Login failed',
+        severity: 'error',
+      });
       console.error('Login error:', err);
     }
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar((prev) => ({ ...prev, open: false }));
   };
 
   return (
@@ -72,7 +115,6 @@ const SignIn = () => {
         >
           Sign In
         </Typography>
-        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
         <Box component="form" onSubmit={handleSubmit} noValidate>
           <TextField
             margin="normal"
@@ -85,15 +127,25 @@ const SignIn = () => {
             autoFocus
             value={formData.email}
             onChange={handleChange}
+            error={emailError}
+            helperText={emailError ? emailErrorMessage : ''}
             sx={{
               '& .MuiOutlinedInput-root': {
-                '& fieldset': { borderColor: 'rgba(197, 250, 80, 0.3)' },
-                '&:hover fieldset': { borderColor: 'rgba(197, 250, 80, 0.5)' },
-                '&.Mui-focused fieldset': { borderColor: 'primary.main' },
+                '& fieldset': {
+                  borderColor: 'rgba(197, 250, 80, 0.3)',
+                },
+                '&:hover fieldset': {
+                  borderColor: 'rgba(197, 250, 80, 0.5)',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: 'primary.main',
+                },
               },
               '& .MuiInputLabel-root': {
                 color: 'rgba(255, 255, 255, 0.7)',
-                '&.Mui-focused': { color: 'primary.main' },
+                '&.Mui-focused': {
+                  color: 'primary.main',
+                },
               },
             }}
           />
@@ -110,13 +162,21 @@ const SignIn = () => {
             onChange={handleChange}
             sx={{
               '& .MuiOutlinedInput-root': {
-                '& fieldset': { borderColor: 'rgba(197, 250, 80, 0.3)' },
-                '&:hover fieldset': { borderColor: 'rgba(197, 250, 80, 0.5)' },
-                '&.Mui-focused fieldset': { borderColor: 'primary.main' },
+                '& fieldset': {
+                  borderColor: 'rgba(197, 250, 80, 0.3)',
+                },
+                '&:hover fieldset': {
+                  borderColor: 'rgba(197, 250, 80, 0.5)',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: 'primary.main',
+                },
               },
               '& .MuiInputLabel-root': {
                 color: 'rgba(255, 255, 255, 0.7)',
-                '&.Mui-focused': { color: 'primary.main' },
+                '&.Mui-focused': {
+                  color: 'primary.main',
+                },
               },
             }}
           />
@@ -130,7 +190,9 @@ const SignIn = () => {
               bgcolor: 'primary.main',
               color: 'black',
               fontWeight: 600,
-              '&:hover': { bgcolor: '#b3e546' },
+              '&:hover': {
+                bgcolor: '#b3e546',
+              },
             }}
           >
             Sign In
@@ -142,7 +204,10 @@ const SignIn = () => {
                 color: 'primary.main',
                 textDecoration: 'none',
                 fontFamily: 'Monda, sans-serif',
-                '&:hover': { color: '#b3e546', textDecoration: 'none' },
+                '&:hover': {
+                  color: '#b3e546',
+                  textDecoration: 'none',
+                },
               }}
             >
               {"Don't have an account? Sign Up"}
@@ -150,6 +215,23 @@ const SignIn = () => {
           </Box>
         </Box>
       </Paper>
+
+      {/* Snackbar for success or error messages */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbar.severity}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };
