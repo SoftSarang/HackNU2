@@ -10,7 +10,7 @@ RUN npm install
 COPY . .
 
 # Собираем приложение
-RUN npm start
+RUN npm run build
 
 # Экспонируем порт 3000 для разработки
 EXPOSE 3000
