@@ -42,14 +42,13 @@ services:
   frontend:
     build: ./frontend
     container_name: hackathon_frontend
-    ports:
-      - "3000:3000"
-    working_dir: /frontend
     volumes:
-      - ./frontend:/frontend
-      - /frontend/node_modules
+      - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "80:80"
     depends_on:
       - backend
 
+  
 volumes:
   postgres_data:
