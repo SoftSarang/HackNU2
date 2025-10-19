@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "hackathon",
+			"path": ".."
+		},
+		{
+			"name": "new_frontend",
+			"path": "../../new_frontend"
+		}
+	],
+	"settings": {}
+}

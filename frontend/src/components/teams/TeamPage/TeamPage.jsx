@@ -1,73 +1,39 @@
-// Adapted from frontend/components/sections/teams/TeamPage.jsx
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import {
-  Container,
-  Typography,
-  Box,
-  Grid,
-  Paper,
-  Button,
-} from '@mui/material';
-import { teamsApi } from '../../../api/teams';
+// // In your main App.jsx
+// import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+// import { TeamProvider, AuthContext } from '../TeamContext'; // Import TeamProvider
 
-const TeamPage = () => {
-  const { teamId } = useParams();
-  const [team, setTeam] = useState(null);
-  const [loading, setLoading] = useState(true);
+// import TeamCreate from './components/Teams/TeamCreate/TeamCreate';
+// import TeamList from './components/Teams/TeamList/TeamList';
+// // ... other imports
 
-  useEffect(() => {
-    const fetchTeam = async () => {
-      try {
-        const data = await teamsApi.getTeamById(teamId);
-        setTeam(data);
-      } catch (error) {
-        console.error('Error fetching team:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+// function App() {
+//   // Mock Auth Provider to avoid errors
+//   const mockAuthContextValue = { user: { id: 'user123', email: 'user@example.com' }, loading: false };
 
-    fetchTeam();
-  }, [teamId]);
+//   return (
+//     <AuthContext.Provider value={mockAuthContextValue}>
+//       <TeamProvider> {/* Wrap the routes with the TeamProvider */}
+//         <Router>
+//           <Routes>
+//             {/* Direct access to list/create */}
+//             <Route path="/teams" element={<TeamList />} />
+//             <Route path="/teams/create" element={<TeamCreate />} />
+//             {/* Route for detail, using a dynamic segment */}
+//             <Route path="/teams/:teamId" element={<TeamPageWrapper />} /> 
+//             {/* ... other routes */}
+//           </Routes>
+//         </Router>
+//       </TeamProvider>
+//     </AuthContext.Provider>
+//   );
+// }
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+// // Helper component for /teams/:teamId route
+// const TeamPageWrapper = () => {
+//   const { teamId } = useParams();
+//   const { getTeamById } = useContext(TeamContext);
+//   const team = getTeamById(teamId);
 
-  if (!team) {
-    return <div>Team not found</div>;
-  }
-
-  return (
-    <Container maxWidth="lg">
-      <Box sx={{ mt: 4, mb: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          {team.name}
-        </Typography>
-        <Grid container spacing={4}>
-          <Grid item xs={12} md={8}>
-            <Paper sx={{ p: 3 }}>
-              <Typography variant="h6" gutterBottom>
-                Description
-              </Typography>
-              <Typography variant="body1">
-                {team.description}
-              </Typography>
-            </Paper>
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <Paper sx={{ p: 3 }}>
-              <Typography variant="h6" gutterBottom>
-                Team Members
-              </Typography>
-              {/* TeamMembers component will be added here */}
-            </Paper>
-          </Grid>
-        </Grid>
-      </Box>
-    </Container>
-  );
-};
-
-export default TeamPage;
+//   if (!team) return <Alert severity="error">Team not found.</Alert>;
+//   return <TeamDetail team={team} />;
+// };

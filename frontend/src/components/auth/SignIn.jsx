@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
-import { AuthContext } from '../../contexts//AuthContext';
+import { AuthContext } from '../../contexts/AuthContext';
 
 const SignIn = () => {
   const navigate = useNavigate();

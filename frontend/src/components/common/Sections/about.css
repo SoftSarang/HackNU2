@@ -42,8 +42,9 @@
 }
 .purp-pic{
     position: absolute;
-    height: 570px;
+    height: 430px;
     width: auto;
-    top: -80px;
+    top: -30px;
     left: 55%;
+    border-radius: 20px;
 }

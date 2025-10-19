@@ -6,7 +6,7 @@ const SectionWrapper = styled.section`
   width: 100vw;
   position: relative; 
   display: flex;
-  margin: 0 auto;
+  margin-left: 100px;
   color: white;
   font-family: 'Albert Sans', sans-serif;
 
@@ -30,7 +30,7 @@ const Container = styled.div`
 
 const About = () => {
   return (
-    <SectionWrapper id="fixed-target" className="about">
+    <SectionWrapper id="about" className="about">
       
 
       <LeftContainer
@@ -40,11 +40,13 @@ const About = () => {
       >
        <p className="how-work">How it works</p>
        <p className="more-thn"><span className="more-yell">More </span>than a <br />
-       profile picture 
+       AI platform 
        </p> 
        <p className="meta-des">
-        Metaluxe suits are <span className="nft-yell">suit-inspired NFTs</span> that live in <span className="art-one">artwork form</span> and <span className="art-two">augmented reality</span>. <br />
-        Take your NFT everywhere you go, create content, and share with the world.
+        <span className="nft-yell">Teams</span> allows users to collaborate and manage AI-generated content, <br />
+          creating, sharing, and tracking prompts and results with ease. <br />
+          It's a platform built to help teams work together on creative AI projects, <br />
+          providing seamless content creation and management.
        </p>
       </LeftContainer>
       <Container id="up">

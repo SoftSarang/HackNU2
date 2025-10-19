@@ -16,7 +16,7 @@ const LeftContainer = styled.div`
 
 const Second = () => {
   return (
-    <SectionWrapper id="fixed-target" className="about">
+    <SectionWrapper id="second" className="about">
       <LeftContainer
         data-scroll
       >

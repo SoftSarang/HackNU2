@@ -1,13 +1,13 @@
 import styled from 'styled-components'; 
 import "./banner.css";
-import SLIDE from '../../../assets/images/3.png';
+import SLIDE from '../../../assets/images/3.jpeg';
 import SLIDE1 from '../../../assets/images/4.png';
-import SLIDE2 from '../../../assets/images/5.png';
-import SLIDE3 from '../../../assets/images/6.png';
-import SLIDE4 from '../../../assets/images/7.png';
-import SLIDE5 from '../../../assets/images/8.png';
-import SLIDE6 from '../../../assets/images/9.png';
-import SLIDE7 from '../../../assets/images/10.png';
+import SLIDE2 from '../../../assets/images/5.jpeg';
+import SLIDE3 from '../../../assets/images/6.jpeg';
+import SLIDE4 from '../../../assets/images/7.jpeg';
+import SLIDE5 from '../../../assets/images/8.jpeg';
+import SLIDE6 from '../../../assets/images/9.jpeg';
+import SLIDE7 from '../../../assets/images/10.jpeg';
 const SectionWrapper = styled.section`
   min-height: 100vh;
   width: 100vw;
@@ -37,19 +37,18 @@ const Container = styled.div`
 
 const Banner = () => {
   return (
-    <SectionWrapper id="fixed-target" className="banner">
+    <SectionWrapper id="banner" className="banner">
       <Container
         data-scroll
         data-scroll-delay=".15"
         data-scroll-speed="1"
       >
        <p className="how-work">whats included</p>
-       <p className="more-thn">genesis<br />
-       <span className="gen-yell">Collection</span>
+       <p className="more-thn">Teams<br />
+       <span className="gen-yell">Collaboration</span>
        </p> 
        <p className="meta-des">
-        The Metaluxe genesis NFT collection consists of <span className="ten-yell">10,000 unique, hand-curated suits</span>.<br />
-        Each suit includes a blockchain-authenthicated artwork piece and an identical, cloud-hosted<span className="rm-one">augmented reality model</span>. <br />
+        <span className="ten-yell">Teams</span> provides a collaborative space for creating and sharing AI-generated content. Work together to manage prompts, track results, <br /> and streamline content creation workflows with ease. All content is organized and easily accessible for team collaboration.<br />
         </p>
       </Container> 
       <LeftContainer

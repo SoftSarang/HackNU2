@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   Box,
   Container,
@@ -10,10 +10,12 @@ import {
   Grid,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { TeamContext } from '../TeamContext';// Adjusted import path
 
 const TeamList = () => {
   const navigate = useNavigate();
-  const teams = []; // Replace with actual teams data
+  // Get teams from the context
+  const { teams } = useContext(TeamContext); 
 
   const handleCreateTeam = () => {
     navigate('/teams/create');
@@ -40,31 +42,35 @@ const TeamList = () => {
         </Box>
 
         <Grid container spacing={3}>
-          {teams.map((team) => (
-            <Grid item xs={12} sm={6} md={4} key={team.id}>
-              <Card>
-                <CardContent>
-                  <Typography variant="h5" component="h2">
-                    {team.name}
-                  </Typography>
-                  <Typography color="text.secondary">
-                    {team.description}
-                  </Typography>
-                  <Typography variant="body2">
-                    Members: {team.memberCount}
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Button
-                    size="small"
-                    onClick={() => handleTeamClick(team.id)}
-                  >
-                    View Team
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grid>
-          ))}
+          {teams.length === 0 ? (
+            <Typography variant="body1" sx={{ ml: 3 }}>No teams found. Create one!</Typography>
+          ) : (
+            teams.map((team) => (
+              <Grid item xs={12} sm={6} md={4} key={team.id}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="h5" component="h2">
+                      {team.name}
+                    </Typography>
+                    <Typography color="text.secondary">
+                      {team.description}
+                    </Typography>
+                    <Typography variant="body2">
+                      Members: {team.memberCount}
+                    </Typography>
+                  </CardContent>
+                  <CardActions>
+                    <Button
+                      size="small"
+                      onClick={() => handleTeamClick(team.id)}
+                    >
+                      View Team
+                    </Button>
+                  </CardActions>
+                </Card>
+              </Grid>
+            ))
+          )}
         </Grid>
       </Box>
     </Container>

@@ -5,13 +5,6 @@ from fastapi import HTTPException, status
 import json
 from typing import Optional
 
-def check_team_access(db: Session, user: User, team_id: int) -> None:
-    """Проверка, является ли пользователь членом команды."""
-    team = db.query(Team).filter(Team.id == team_id).first()
-    if not team:
-        raise HTTPException(status_code=404, detail="Команда не найдена")
-    if user not in team.members:
-        raise HTTPException(status_code=403, detail="Вы не член команды")
 
 def validate_prompt_parameters(parameters: Optional[dict]) -> Optional[str]:
     """Валидация параметров промпта и преобразование в JSON-строку."""
@@ -30,3 +23,16 @@ def validate_prompt_parameters(parameters: Optional[dict]) -> Optional[str]:
 def generate_asset_url(asset_type: str, prompt_id: int) -> str:
     """Генерация URL для ассета на основе его типа и ID промпта."""
     pass
+
+from fastapi import HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
+from app.models.team import Team
+from app.models.user import User
+async def check_team_access(db: AsyncSession, user: User, team_id: int):
+    result = await db.execute(select(Team).filter(Team.id == team_id))
+    team = result.scalars().first()
+    if not team:
+        raise HTTPException(status_code=404, detail="Team not found")
+    if user.id not in [member.id for member in team.members]:
+        raise HTTPException(status_code=403, detail="Access to team denied")

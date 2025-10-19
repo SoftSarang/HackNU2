@@ -7,9 +7,10 @@
 }
 .rick-pic{
     position: absolute;
-    height: 570px;
+    height: 470px;
+    border-radius: 20px;
     width: auto;
-    top: -80px;
+    top: 0px;
     left: 55%;
 }
 .accordion > input[type="checkbox"] {

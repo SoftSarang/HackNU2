@@ -9,9 +9,12 @@ import './cover.css';
 
 const SectionWrapper = styled.section`
   min-height: 100vh;
-  width: 100vw;
+  width: 100%;
+  max-width: 100vw;
   position: relative;
   overflow: hidden;
+  margin: 0;
+  padding: 0;
 `;
 
 const CanvasWrapper = styled.div`
@@ -31,9 +34,19 @@ const BannerTitle = styled(motion.h1)`
   pointer-events: none;
   line-height: 1;
   z-index: 9998;
-  color: #fff;
+  color: var(--primary-color);
+  text-shadow: 0 0 5px var(--primary-color),
+               0 0 10px var(--primary-color);
 
-  & span { display: block; }
+  & span { 
+    display: block;
+    transition: color 0.3s ease;
+    &:hover {
+      color: var(--secondary-color);
+      text-shadow: 0 0 5px var(--secondary-color),
+                  0 0 10px var(--secondary-color);
+    }
+  }
 `;
 
 const Hero = () => {

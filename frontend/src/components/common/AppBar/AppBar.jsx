@@ -68,19 +68,32 @@ const AppBar = () => {
               },
             }}
           >
-            HackNU
+            EdgeMap
           </Typography>
-          <Button 
-            onClick={handleTeamsClick}
-            sx={{
-              color: 'white',
-              '&:hover': {
-                color: 'primary.main',
-              },
-            }}
-          >
-            Teams
-          </Button>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Button 
+              onClick={handleTeamsClick}
+              sx={{
+                color: 'white',
+                '&:hover': {
+                  color: 'primary.main',
+                },
+              }}
+            >
+              Teams
+            </Button>
+            <Button 
+              onClick={() => navigate('/prompt')}
+              sx={{
+                color: 'white',
+                '&:hover': {
+                  color: 'primary.main',
+                },
+              }}
+            >
+              Prompt
+            </Button>
+          </Box>
         </Box>
 
         {!user ? (
