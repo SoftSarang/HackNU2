@@ -7,6 +7,7 @@ import {
   Typography,
   Box,
   Link,
+  Snackbar,
   Alert,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -19,8 +20,24 @@ const SignUp = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
+    confirmPassword: '',
+    name: '',
   });
-  const [error, setError] = useState(null);
+
+  const [emailError, setEmailError] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
+  const [confirmPasswordError, setConfirmPasswordError] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success',
+  });
+
+  // Регулярное выражение для проверки правильности email
+  const validateEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
 
   const handleChange = (e) => {
     setFormData({
@@ -31,54 +48,81 @@ const SignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
+    setEmailError(false);
+    setPasswordError(false);
+    setConfirmPasswordError(false);
+
+    // Валидация email
+    if (!validateEmail(formData.email)) {
+      setEmailError(true);
+      return; // Останавливаем отправку формы
+    }
+
+    // Валидация паролей
+    if (formData.password !== formData.confirmPassword) {
+      setPasswordError(true);
+      setConfirmPasswordError(true);
+      return; // Останавливаем отправку формы
+    }
+
     try {
       const response = await api.post('/auth/register', {
         email: formData.email,
         password: formData.password,
       });
+
       // После регистрации сразу логиним
       const loginResponse = await api.post('/auth/login', {
         email: formData.email,
         password: formData.password,
       });
       const { access_token, refresh_token } = loginResponse.data;
+
       localStorage.setItem('access_token', access_token);
       localStorage.setItem('refresh_token', refresh_token);
       await login({ access_token, refresh_token });
+
+      // Переход на профиль после успешного логина
+      setSnackbar({
+        open: true,
+        message: 'Signed up successfully!',
+        severity: 'success',
+      });
       navigate('/profile');
     } catch (err) {
-      setError(err.response?.data?.detail || 'Ошибка регистрации');
+      setSnackbar({
+        open: true,
+        message: err.response?.data?.detail || 'Ошибка регистрации',
+        severity: 'error',
+      });
       console.error(err);
     }
   };
 
+  const handleCloseSnackbar = () => {
+    setSnackbar((prev) => ({ ...prev, open: false }));
+  };
+
   return (
     <Container maxWidth="sm">
-      <Paper
-        elevation={3}
-        sx={{
-          p: 4,
-          mt: 8,
-          background: 'rgba(18, 18, 18, 0.8)',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-        }}
-      >
-        <Typography
-          variant="h4"
-          align="center"
-          gutterBottom
-          sx={{
-            color: 'primary.main',
-            fontFamily: 'Lora, serif',
-            fontWeight: 600,
-          }}
-        >
+      <Paper elevation={3} sx={{ p: 4, mt: 8 }}>
+        <Typography variant="h4" align="center" gutterBottom>
           Sign Up
         </Typography>
-        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
         <Box component="form" onSubmit={handleSubmit} noValidate>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="name"
+            label="Full Name"
+            name="name"
+            autoComplete="name"
+            autoFocus
+            value={formData.name}
+            onChange={handleChange}
+            sx={{ mb: 2 }}
+          />
           <TextField
             margin="normal"
             required
@@ -87,28 +131,11 @@ const SignUp = () => {
             label="Email Address"
             name="email"
             autoComplete="email"
-            autoFocus
             value={formData.email}
             onChange={handleChange}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: 'rgba(197, 250, 80, 0.3)',
-                },
-                '&:hover fieldset': {
-                  borderColor: 'rgba(197, 250, 80, 0.5)',
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: 'primary.main',
-                },
-              },
-              '& .MuiInputLabel-root': {
-                color: 'rgba(255, 255, 255, 0.7)',
-                '&.Mui-focused': {
-                  color: 'primary.main',
-                },
-              },
-            }}
+            error={emailError}
+            helperText={emailError ? 'Invalid email address' : ''}
+            sx={{ mb: 2 }}
           />
           <TextField
             margin="normal"
@@ -121,25 +148,25 @@ const SignUp = () => {
             autoComplete="new-password"
             value={formData.password}
             onChange={handleChange}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: 'rgba(197, 250, 80, 0.3)',
-                },
-                '&:hover fieldset': {
-                  borderColor: 'rgba(197, 250, 80, 0.5)',
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: 'primary.main',
-                },
-              },
-              '& .MuiInputLabel-root': {
-                color: 'rgba(255, 255, 255, 0.7)',
-                '&.Mui-focused': {
-                  color: 'primary.main',
-                },
-              },
-            }}
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="confirmPassword"
+            label="Confirm Password"
+            type="password"
+            id="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            error={passwordError || confirmPasswordError}
+            helperText={
+              passwordError || confirmPasswordError
+                ? 'Passwords do not match'
+                : ''
+            }
+            sx={{ mb: 2 }}
           />
           <Button
             type="submit"
@@ -159,23 +186,29 @@ const SignUp = () => {
             Sign Up
           </Button>
           <Box sx={{ textAlign: 'center' }}>
-            <Link
-              href="/signin"
-              sx={{
-                color: 'primary.main',
-                textDecoration: 'none',
-                fontFamily: 'Monda, sans-serif',
-                '&:hover': {
-                  color: '#b3e546',
-                  textDecoration: 'none',
-                },
-              }}
-            >
-              {'Already have an account? Sign In'}
+            <Link href="/signin" variant="body2">
+              {"Already have an account? Sign In"}
             </Link>
           </Box>
         </Box>
       </Paper>
+
+      {/* Snackbar for success or error messages */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbar.severity}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };
