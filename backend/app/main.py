@@ -10,26 +10,25 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# Routers
-app.include_router(auth.router)
-app.include_router(teams.router)
-app.include_router(assets.router)
-app.include_router(prompts.router)
-
 # CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # Для продакшена замените на конкретные домены, например ["http://localhost:3000"]
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Health check
-@app.get("/")
-async def root():
-    return {"message": "Hackathon backend is running 🚀"}
+# Подключение роутеров с префиксом /api
+app.include_router(teams.router, prefix="/api")
+app.include_router(auth.router)
+app.include_router(assets.router, prefix="/api")
+app.include_router(prompts.router, prefix="/api")
 
 @app.on_event("startup")
 async def startup_event():
     await init_models()
+
+@app.get("/")
+async def root():
+    return {"message": "HackNU Hackathon API is running!"}
