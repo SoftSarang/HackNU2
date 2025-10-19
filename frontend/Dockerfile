@@ -7,7 +7,7 @@ WORKDIR /app
 RUN apk add --no-cache bash
 
 # Копируем package файлы и ставим зависимости
-COPY package.json package-lock.json ./
+COPY package.json ./
 RUN npm install
 
 # Копируем весь проект
