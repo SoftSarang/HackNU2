@@ -126,15 +126,6 @@ const App = () => {
                 path="/teams/:teamId"
                 element={<ProtectedRoute><Layout><TeamPage /></Layout></ProtectedRoute>}
               />
-              {/* Models / Features routes */}
-              <Route
-                path="/models/3d-tour"
-                element={<ProtectedRoute><Layout><ThreeDTour /></Layout></ProtectedRoute>}
-              />
-              <Route
-                path="/models/virtual-tour"
-                element={<ProtectedRoute><Layout><div>Virtual Tour Page (TBD)</div></Layout></ProtectedRoute>}
-              />
             </Routes>
           </Router>
         </TeamProvider>
