@@ -1,31 +1,32 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { Container, Typography, Box, TextField, Button, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { TeamContext } from '../TeamContext'; // Adjusted import path
+import api from '../../../services/api';
 
 const TeamCreate = () => {
   const navigate = useNavigate();
-  const { createTeam } = useContext(TeamContext); // Get createTeam from context
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false); // Added loading state
 
   const handleCreate = async () => {
     try {
+      // Clear previous error and set loading state
       setError(null);
       setLoading(true);
 
-      // Call the context function instead of api.post
-      await createTeam({ name, description });
+      console.log('Creating team with data:', { name, description });
+      const response = await api.post('/api/teams', { name, description });
 
-      navigate('/teams'); 
+      console.log('Team created successfully:', response.data); // Log the response
+      navigate('/teams'); // Navigate only on success
     } catch (err) {
-      console.error('Team creation error:', err);
-      // Local state error simulation
-      setError(err.message || 'Failed to create team due to local state error.');
+      console.error('Team creation error:', err.response || err);
+      // Set error message based on response, if available
+      setError(err.response?.data?.detail || 'Failed to create team');
     } finally {
-      setLoading(false); 
+      setLoading(false); // Reset loading state
     }
   };
 
@@ -60,7 +61,7 @@ const TeamCreate = () => {
             variant="contained"
             sx={{ bgcolor: 'primary.main', color: 'black', fontWeight: 600 }}
             onClick={handleCreate}
-            disabled={!name || loading} 
+            disabled={!name || loading} // Disable button when loading or name is empty
           >
             {loading ? 'Creating...' : 'Create Team'} 
           </Button>
